@@ -54,22 +54,19 @@ cd digital-archivist
 
 ### 5. Add Environment Variables
 
-Create a file named `firebase-applet-config.json` in the root of the project and paste your Firebase configuration:
+Create a file named `.env` in the root of the project and paste your Firebase configuration:
 
-```json
-{
-  "projectId": "YOUR_PROJECT_ID",
-  "appId": "YOUR_APP_ID",
-  "apiKey": "YOUR_API_KEY",
-  "authDomain": "YOUR_AUTH_DOMAIN",
-  "firestoreDatabaseId": "(default)",
-  "storageBucket": "YOUR_STORAGE_BUCKET",
-  "messagingSenderId": "YOUR_MESSAGING_SENDER_ID",
-  "measurementId": "YOUR_MEASUREMENT_ID"
-}
+```env
+VITE_FIREBASE_PROJECT_ID=YOUR_PROJECT_ID
+VITE_FIREBASE_APP_ID=YOUR_APP_ID
+VITE_FIREBASE_API_KEY=YOUR_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN=YOUR_AUTH_DOMAIN
+VITE_FIREBASE_DATABASE_ID=(default)
+VITE_FIREBASE_STORAGE_BUCKET=YOUR_STORAGE_BUCKET
+VITE_FIREBASE_MESSAGING_SENDER_ID=YOUR_MESSAGING_SENDER_ID
 ```
 
-*(Alternatively, you can use `.env` variables if you prefer to configure Vite to use them, but the codebase is currently set up to import from `firebase-applet-config.json`)*
+*(Note: The `firebase-applet-config.json` file is ignored by Git to prevent accidentally committing your API keys to GitHub. The application is configured to read from these `.env` variables first.)*
 
 ### 6. Install Dependencies & Run
 
@@ -119,6 +116,29 @@ To bootstrap your first admin account:
 3. Change the hardcoded email (`whuggins@law.stanford.edu`) to your Google account email.
 4. Deploy the rules to Firestore.
 5. Log in to the app using that Google account. You will now have admin privileges and can create projects.
+
+## Deploying to Vercel
+
+The easiest way to deploy this application is using [Vercel](https://vercel.com).
+
+1. Push your customized code to a GitHub repository.
+2. Log in to Vercel and click **Add New... > Project**.
+3. Import your GitHub repository.
+4. Vercel will automatically detect that it is a Vite project. Ensure the following build settings are set:
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+5. **Environment Variables**: Add your Firebase configuration in the Vercel Environment Variables section:
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_APP_ID`
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_DATABASE_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+6. Click **Deploy**.
+
+**Important Post-Deployment Step:** Once Vercel provides your live production URL (e.g., `https://your-app.vercel.app`), you must add this domain to your Firebase Authentication **Authorized domains** list in the Firebase Console (under Authentication > Settings > Authorized domains) so that Google Sign-In works correctly.
 
 ## Project Structure
 

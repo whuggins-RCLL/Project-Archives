@@ -1,8 +1,30 @@
+/// <reference types="vite/client" />
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import firebaseConfig from '../../firebase-applet-config.json';
+
+// 1. Try environment variables first (Vercel/GitHub)
+let firebaseConfig: any = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  firestoreDatabaseId: import.meta.env.VITE_FIREBASE_DATABASE_ID || '(default)',
+};
+
+// 2. Fallback to local config file (AI Studio)
+if (!firebaseConfig.apiKey) {
+  const configModules = import.meta.glob('../../firebase-applet-config.json', { eager: true });
+  const moduleKeys = Object.keys(configModules);
+  if (moduleKeys.length > 0) {
+    firebaseConfig = (configModules[moduleKeys[0]] as any).default || configModules[moduleKeys[0]];
+  } else {
+    console.error("Firebase configuration missing. Please set VITE_FIREBASE_* environment variables.");
+  }
+}
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
